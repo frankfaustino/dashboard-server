@@ -1,48 +1,63 @@
 import axios from 'axios'
 
+import { query } from '../../db/fns'
 
-const internal = async (postData: any, env: any) => {
+const me = async (_: any, { sessionId }: any) => {
+  // query for user id
+  query
+  console.log('🏄🏼 sessionId: ', sessionId)
+  return {
+    id: 0,
+    firstName: 'test',
+    lastName: 'test',
+    username: 'test',
+    email: '',
+    token: '',
+    sessionCount: 1,
+  }
+}
+
+const login = async (_: any, args: any, { res }: any) => {
   try {
-    const response = await axios({
-      method: 'post',
-      url: `https://${env}/cos/v1/dashboard/internal/login`,
-      headers: { 'Preferred-Auth': 'internal' },
-      data: postData,
-      withCredentials: true,
-    })
-    if (response.headers['set-cookie']) {
-      const cookies = response.headers['set-cookie'][0]
-      const [internalSessionId] = cookies.split(';')
-      return internalSessionId.substring(16, internalSessionId.length)
-    }
-    return false
-  } catch (err) {
-    return err.response.data
-  }
-}
+    const { username, password, environment } = args
+    const data = { username, password }
 
-const setCookie = (res: any, key: any, id: any) => {
-  res.cookie(key, id, { maxAge: 3600000 })
-  // res.set('cookie', cookieValue);
-}
+    if (username && password) {
+      const response = await axios({
+        method: 'post',
+        url: `https://${environment}/cos/v1/dashboard/internal/login`,
+        headers: { 'Preferred-Auth': 'internal' },
+        data,
+        withCredentials: true,
+      })
 
-const login = async (_: any, args: any, ctx: any) => {
-  const { username, password, environment } = args
-  const data = { username, password }
-  if (username && password) {
-      const sessionId = await internal(data, environment.environment)
-      if (sessionId instanceof Object) {
-          console.log(sessionId)
-          return { sessionId: sessionId.message }
-      } else if (sessionId) {
-          setCookie(ctx.res, "sessionId", sessionId)
-          return { sessionId }
+      if (response.status === 200 && response.headers['set-cookie']) {
+        const cookies = response.headers['set-cookie'][0]
+        const [internalSessionId] = cookies.split(';')
+        const sessionId = internalSessionId.substring(16, internalSessionId.length)
+        res.cookie('sessionId', sessionId, { maxAge: 3600000 })
+        // need to store user id in cookie too
+        return { sessionId, error: null }
       }
+
+      // Check if user exists in DB
+      // Store session in DB
+      // Increment session count
+    }
+    return { sessionId: null, error: 'Missing parameters.' }
+  } catch (error) {
+    console.error('login: ', error)
+    if (error.response && error.response.data) {
+      return { sessionId: null, error: error.response.data.message }
+    }
+    return { sessionId: null, error: error.message }
   }
-  return { sessionId: 'Missing params' }
 }
 
 export default {
+  Query: {
+    me
+  },
   Mutation: {
     login
   }

@@ -6,16 +6,15 @@ type User {
   email: String
   token: String
   sessionCount: Int
-  roles: [Role]
-  news: [NewsItem]
 }
 
 type LoginResponse {
   sessionId: String
+  error: String
 }
 
 type Query {
-  me: User
+  me(sessionId: String): User
   users: [User]
   user(id: ID!): User
 }
