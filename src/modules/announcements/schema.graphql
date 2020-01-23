@@ -12,4 +12,6 @@ type Query {
 
 type Mutation {
   createAnnouncement(text: String, is_urgent: Boolean, username: String): Response
+  deleteAnnouncementById(id: ID): Response
+  updateAnnouncement(id: ID, text: String, is_urgent: Boolean, username: String): Response
 }
