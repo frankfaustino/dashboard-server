@@ -1,7 +1,6 @@
 import moment from 'moment'
 
-import { AnswerHubResponse } from './types'
-import { answerHubAPI, getPriorWeekDates } from '../../lib/utils'
+import { AnswerHubResponse, answerHubAPI, getPriorWeekDates } from '../../lib'
 
 
 export default {

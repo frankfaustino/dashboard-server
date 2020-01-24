@@ -1,4 +1,4 @@
-import { query } from '../../db/fns'
+import { query } from '../../db'
 
 const announcements =  async () => {
         const response = await query(['SELECT * FROM announcements;']);
