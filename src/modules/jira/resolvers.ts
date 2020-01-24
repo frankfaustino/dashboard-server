@@ -1,5 +1,5 @@
-import { getPriorWeekDates, jiraAPI } from '../../lib/utils'
-import { query } from '../../db/fns'
+import { getPriorWeekDates, jiraAPI } from '../../lib'
+import { query } from '../../db'
 
 
 export default {
