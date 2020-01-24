@@ -1,7 +1,6 @@
 type User {
   id: ID!
-  firstName: String
-  lastName: String
+  name: String
   username: String
   email: String
   token: String
@@ -14,13 +13,14 @@ type LoginResponse {
 }
 
 type Query {
-  me(sessionId: String): User
-  users: [User]
-  user(id: ID!): User
+  me: User
+  # users: [User]
+  # user(id: ID!): User
 }
 
 type Mutation {
   login(username: String!, password: String!, environment: String!): LoginResponse
+  logout: Response
 }
 
 enum Role {
