@@ -2,7 +2,7 @@ import { query } from '../../db'
 
 
 const news = async () => {
-    const response = await query(['SELECT * FROM news;'])
+    const response = await query(['SELECT * FROM news WHERE deleted_at IS NULL;'])
     console.log('fetchNewsItems: ', response[0])
     return response[0].map(obj => ({ ...obj, createdAt: obj.created_at }))
 }
@@ -28,7 +28,7 @@ const addNews = async (_: any, args: any) => {
 
 const deleteNewsById =  async (_: any, args: any) => {
     try {
-        const response = await query([`DELETE FROM news WHERE id = ${args.id};`]);
+        const response = await query([`UPDATE news SET deleted_at=CURRENT_TIMESTAMP WHERE id = ${args.id};`]);
         console.log('deleteNewsById: ', response[0]);
         return response[0]
     }  catch ({ message }) {
