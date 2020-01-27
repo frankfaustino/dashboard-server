@@ -8,6 +8,7 @@ type Announcement {
 
 type Query {
   announcements: [Announcement]
+  getAnnouncementsById(username: String): [Announcement]
 }
 
 type Mutation {
